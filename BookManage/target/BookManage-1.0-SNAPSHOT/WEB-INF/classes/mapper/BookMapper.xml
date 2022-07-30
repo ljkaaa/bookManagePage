@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.BookMapper">
+    <insert id="insert">
+        insert into t_book values(#{barCode},#{name},#{author},#{publisher},#{publishDate},#{count})
+    </insert>
+
+    <delete id="delete">
+        delete from t_book where barCode=#{barCode}
+    </delete>
+
+    <delete id="deleteByBarCodes">
+        delete from t_book where barCode in
+            <foreach collection="barCodes" item="barCode" open="(" close=")" separator=",">
+                #{barCode}
+            </foreach>
+    </delete>
+
+    <update id="update">
+        update t_book set name=#{name},author=#{author},
+                          publisher=#{publisher},publishDate=#{publishDate},
+                          count=#{count} where barCode=#{barCode}
+    </update>
+
+    <select id="getCount" resultType="int">
+        select count(*) from t_book
+    </select>
+
+    <select id="selectByPage" resultType="Book">
+        select * from t_book limit #{begin}, #{size}
+    </select>
+    
+    <select id="getConditionCount" resultType="int">
+        select count(*) from t_book
+        <where>
+            <if test="barCode > 0">
+                and barCode = #{barCode}
+            </if>
+
+            <if test="name != null and name != ''">
+                and name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByPageAndCondition" resultType="Book">
+        select * from t_book
+        <where>
+            <if test="book.barCode > 0">
+                and barCode = #{book.barCode}
+            </if>
+
+            <if test="book.name != null and book.name != '' ">
+                and name like concat('%',#{book.name},'%')
+            </if>
+        </where>
+        limit #{begin}, #{size}
+    </select>
+
+    <select id="queryByBarCode" resultType="Book">
+        select * from t_book where barCode=#{barCode}
+    </select>
+
+    <select id="queryByName" resultType="Book">
+        select * from t_book where name like
+                                   concat('%',#{name},'%')
+    </select>
+
+    <select id="queryAllBooks" resultType="Book">
+        select * from t_book
+    </select>
+
+</mapper>
